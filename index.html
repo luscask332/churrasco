@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Convite — Churrasco de 18 Anos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ============ CONFIGURE AQUI ============ */
+  /* Troque os valores abaixo pelos dados reais do seu churrasco */
+  :root{
+    --cor-fundo: #17130f;
+    --cor-fundo-2: #201a14;
+    --cor-brasa: #ff6a2b;
+    --cor-brasa-clara: #ffb238;
+    --cor-fumaca: #8f887d;
+    --cor-texto: #f3ede2;
+    --cor-texto-fraco: #beb4a4;
+    --cor-linha: #3a3128;
+    --cor-ok: #6fae5c;
+    --cor-nao: #b0503f;
+    --fonte-display: 'Bebas Neue', sans-serif;
+    --fonte-corpo: 'Work Sans', sans-serif;
+  }
+</style>
+<style>
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{background:var(--cor-fundo); color:var(--cor-texto); font-family:var(--fonte-corpo); -webkit-font-smoothing:antialiased;}
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(ellipse 700px 400px at 50% -10%, rgba(255,106,43,0.18), transparent 60%),
+      radial-gradient(ellipse 500px 300px at 90% 100%, rgba(255,178,56,0.08), transparent 60%),
+      var(--cor-fundo);
+    overflow-x:hidden;
+  }
+  .wrap{ max-width:520px; margin:0 auto; padding:0 20px 60px; position:relative; }
+
+  /* --- brasas flutuantes (elemento assinatura) --- */
+  .brasas{ position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+  .brasa{
+    position:absolute; bottom:-10px; border-radius:50%;
+    background: radial-gradient(circle, var(--cor-brasa-clara), var(--cor-brasa) 60%, transparent 70%);
+    opacity:0; filter:blur(0.3px);
+    animation: subir linear infinite;
+  }
+  @keyframes subir{
+    0%{ transform:translateY(0) translateX(0); opacity:0; }
+    10%{ opacity:.9; }
+    90%{ opacity:.5; }
+    100%{ transform:translateY(-100vh) translateX(var(--drift,10px)); opacity:0; }
+  }
+  @media (prefers-reduced-motion: reduce){ .brasa{ animation:none; display:none; } }
+
+  header{ position:relative; z-index:1; text-align:center; padding:56px 0 28px; }
+  .eyebrow{
+    font-family:var(--fonte-corpo); font-weight:600; letter-spacing:.22em; text-transform:uppercase;
+    font-size:12px; color:var(--cor-brasa-clara); margin-bottom:14px;
+    -webkit-tap-highlight-color: transparent; user-select:none;
+  }
+  .numero18{
+    font-family:var(--fonte-display); font-size:min(38vw, 190px); line-height:0.8; letter-spacing:1px;
+    background:linear-gradient(180deg, #fff2df 0%, var(--cor-brasa-clara) 35%, var(--cor-brasa) 75%, #a83a12 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    text-shadow:0 0 60px rgba(255,106,43,0.35);
+    filter:drop-shadow(0 0 18px rgba(255,140,50,0.25));
+  }
+  .subtitulo{ font-family:var(--fonte-display); font-size:34px; letter-spacing:.5px; margin-top:6px; color:var(--cor-texto); }
+  .nome-aniversariante{ color:var(--cor-brasa-clara); }
+  .frase{ font-size:15px; color:var(--cor-texto-fraco); margin-top:10px; max-width:340px; margin-inline:auto; line-height:1.5; }
+
+  /* divisor tipo grelha */
+  .grelha{ position:relative; z-index:1; display:flex; align-items:center; gap:10px; margin:36px 0; }
+  .grelha span{ flex:1; height:1px; background:repeating-linear-gradient(90deg, var(--cor-linha) 0 6px, transparent 6px 12px); }
+  .grelha b{ font-family:var(--fonte-display); letter-spacing:.2em; font-size:12px; color:var(--cor-fumaca); text-transform:uppercase; }
+
+  .countdown{ position:relative; z-index:1; display:flex; gap:8px; justify-content:center; margin:0 0 8px; }
+  .countdown .bloco{
+    flex:1; max-width:80px; background:var(--cor-fundo-2); border:1px solid var(--cor-linha); border-radius:12px;
+    padding:12px 4px 10px; text-align:center; position:relative; overflow:hidden;
+  }
+  .countdown .bloco::before{
+    content:''; position:absolute; top:0; left:0; right:0; height:2px;
+    background:linear-gradient(90deg, transparent, var(--cor-brasa-clara), transparent);
+    opacity:.6;
+  }
+  .countdown .valor{
+    font-family:var(--fonte-display); font-size:30px; line-height:1;
+    background:linear-gradient(180deg, #fff2df, var(--cor-brasa-clara));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .countdown .rotulo{ font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--cor-fumaca); margin-top:4px; font-weight:600; }
+  .countdown-legenda{ text-align:center; font-size:12px; color:var(--cor-texto-fraco); margin-bottom:30px; }
+  .countdown-fim{ text-align:center; font-family:var(--fonte-display); font-size:20px; color:var(--cor-brasa-clara); margin-bottom:30px; }
+
+  .cardapio{ position:relative; z-index:1; display:flex; flex-direction:column; gap:0; border:1px solid var(--cor-linha); border-radius:14px; overflow:hidden; background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent); }
+  .item{ display:flex; align-items:flex-start; gap:14px; padding:18px 18px; border-bottom:1px solid var(--cor-linha); }
+  .item:last-child{ border-bottom:none; }
+  .item .icone{ font-size:22px; line-height:1; margin-top:2px; }
+  .item .rotulo{ font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--cor-fumaca); font-weight:600; }
+  .item .valor{ font-size:17px; font-weight:600; margin-top:3px; }
+  .item .comp{ font-size:13px; color:var(--cor-texto-fraco); margin-top:2px; }
+
+  section.rsvp{ position:relative; z-index:1; margin-top:40px; }
+  .rsvp h2{ font-family:var(--fonte-display); font-size:26px; letter-spacing:.5px; text-align:center; margin-bottom:4px; }
+  .rsvp p.hint{ text-align:center; font-size:13px; color:var(--cor-texto-fraco); margin-bottom:22px; }
+
+  .campo{ margin-bottom:16px; }
+  .campo label{ display:block; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--cor-fumaca); font-weight:600; margin-bottom:8px; }
+  .campo input[type="text"], .campo textarea, .campo input[type="number"]{
+    width:100%; background:var(--cor-fundo-2); border:1px solid var(--cor-linha); color:var(--cor-texto);
+    border-radius:10px; padding:13px 14px; font-family:var(--fonte-corpo); font-size:15px; outline:none;
+    transition:border-color .15s ease;
+  }
+  .campo input:focus, .campo textarea:focus{ border-color:var(--cor-brasa); }
+  .campo textarea{ resize:vertical; min-height:70px; }
+
+  .toggle-presenca{ display:flex; gap:10px; }
+  .toggle-presenca button{
+    flex:1; padding:14px; border-radius:10px; border:1px solid var(--cor-linha); background:var(--cor-fundo-2);
+    color:var(--cor-texto); font-family:var(--fonte-corpo); font-weight:600; font-size:14px; cursor:pointer;
+    transition:all .15s ease;
+  }
+  .toggle-presenca button:focus-visible{ outline:2px solid var(--cor-brasa-clara); outline-offset:2px; }
+  .toggle-presenca button.ativo-sim{ background:rgba(111,174,92,0.15); border-color:var(--cor-ok); color:#bfe3b3; }
+  .toggle-presenca button.ativo-nao{ background:rgba(176,80,63,0.15); border-color:var(--cor-nao); color:#f0bcb0; }
+
+  .campo-acompanhantes{ max-height:0; overflow:hidden; transition:max-height .25s ease; }
+  .campo-acompanhantes.aberto{ max-height:120px; }
+
+  .btn-enviar{
+    width:100%; margin-top:6px; padding:15px; border:none; border-radius:12px; cursor:pointer;
+    font-family:var(--fonte-display); font-size:19px; letter-spacing:.06em;
+    background:linear-gradient(180deg, var(--cor-brasa-clara), var(--cor-brasa));
+    color:#1a0f06; box-shadow:0 8px 24px rgba(255,106,43,0.28);
+    transition:transform .1s ease;
+  }
+  .btn-enviar:active{ transform:scale(0.98); }
+  .btn-enviar:disabled{ opacity:.5; cursor:not-allowed; }
+  .btn-enviar:focus-visible{ outline:2px solid #fff; outline-offset:3px; }
+  .erro{ color:#f0bcb0; font-size:13px; margin-top:8px; text-align:center; display:none; }
+
+  /* tela de confirmação */
+  .confirmacao{ display:none; text-align:center; padding:50px 10px; position:relative; z-index:1; }
+  .confirmacao .selo{
+    width:88px; height:88px; margin:0 auto 20px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; font-size:38px;
+    background:radial-gradient(circle, rgba(255,178,56,0.25), transparent 70%);
+    border:1px solid var(--cor-linha);
+  }
+  .confirmacao h2{ font-family:var(--fonte-display); font-size:32px; letter-spacing:.4px;
+    background:linear-gradient(180deg,#fff2df, var(--cor-brasa-clara)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .confirmacao p{ color:var(--cor-texto-fraco); margin-top:10px; font-size:15px; max-width:300px; margin-inline:auto; }
+
+  /* painel admin */
+  .admin-overlay{ display:none; position:fixed; inset:0; background:rgba(10,8,6,0.92); z-index:10; overflow-y:auto; padding:24px 18px 60px; }
+  .admin-box{ max-width:480px; margin:0 auto; position:relative; }
+  .admin-box h2{ font-family:var(--fonte-display); font-size:26px; margin-bottom:18px; }
+  .admin-fechar{ position:absolute; top:-6px; right:0; background:none; border:none; color:var(--cor-texto); font-size:22px; cursor:pointer; }
+  .pin-box input{ width:100%; padding:14px; border-radius:10px; border:1px solid var(--cor-linha); background:var(--cor-fundo-2); color:var(--cor-texto); font-size:16px; letter-spacing:.3em; text-align:center; margin-bottom:12px; }
+  .pin-box button{ width:100%; padding:13px; border-radius:10px; border:none; background:var(--cor-brasa); color:#1a0f06; font-weight:700; cursor:pointer; }
+  .stats{ display:flex; gap:10px; margin-bottom:20px; }
+  .stat{ flex:1; background:var(--cor-fundo-2); border:1px solid var(--cor-linha); border-radius:12px; padding:14px; text-align:center; }
+  .stat .num{ font-family:var(--fonte-display); font-size:28px; }
+  .stat .lbl{ font-size:11px; color:var(--cor-fumaca); text-transform:uppercase; letter-spacing:.08em; margin-top:2px; }
+  .lista-rsvp{ display:flex; flex-direction:column; gap:10px; }
+  .rsvp-card{ background:var(--cor-fundo-2); border:1px solid var(--cor-linha); border-radius:12px; padding:14px 16px; }
+  .rsvp-card .linha1{ display:flex; justify-content:space-between; align-items:center; }
+  .rsvp-card .nome{ font-weight:700; font-size:15px; }
+  .rsvp-card .badge{ font-size:11px; padding:4px 10px; border-radius:999px; font-weight:700; letter-spacing:.03em; }
+  .badge.sim{ background:rgba(111,174,92,0.18); color:#bfe3b3; }
+  .badge.nao{ background:rgba(176,80,63,0.18); color:#f0bcb0; }
+  .rsvp-card .meta{ font-size:12px; color:var(--cor-texto-fraco); margin-top:4px; }
+  .rsvp-card .msg{ font-size:13px; color:var(--cor-texto); margin-top:6px; font-style:italic; }
+  .vazio{ text-align:center; color:var(--cor-texto-fraco); font-size:14px; padding:30px 0; }
+  .refresh{ display:block; margin:0 auto 18px; background:none; border:1px solid var(--cor-linha); color:var(--cor-texto-fraco); padding:8px 16px; border-radius:8px; font-size:12px; cursor:pointer; }
+</style>
+</head>
+<body>
+
+<div class="brasas" id="brasas"></div>
+
+<div class="wrap">
+  <header>
+    <!-- Toque 5x aqui em sequência (menos de 3s) para abrir o painel do organizador -->
+    <div class="eyebrow" id="gatilhoAdmin">Você está convidado(a)</div>
+    <div class="numero18">PARA</div>
+    <div class="subtitulo">O meu churrasco <span class="nome-aniversariante" id="tituloNome">de 18</span></div>
+    <p class="frase">Uma noite de carvão aceso, boa carne e gente querida. Vem celebrar essa nova fase comigo!</p>
+  </header>
+
+  <div class="countdown" id="countdownBlocos">
+    <div class="bloco"><div class="valor" id="cdDias">--</div><div class="rotulo">dias</div></div>
+    <div class="bloco"><div class="valor" id="cdHoras">--</div><div class="rotulo">horas</div></div>
+    <div class="bloco"><div class="valor" id="cdMin">--</div><div class="rotulo">min</div></div>
+    <div class="bloco"><div class="valor" id="cdSeg">--</div><div class="rotulo">seg</div></div>
+  </div>
+  <p class="countdown-legenda" id="countdownLegenda">para o carvão acender 🔥</p>
+  <p class="countdown-fim" id="countdownFim" style="display:none;">O churrasco começou! 🔥</p>
+
+  <div class="grelha"><span></span><b>Detalhes</b><span></span></div>
+
+  <div class="cardapio">
+    <div class="item">
+      <div class="icone">📅</div>
+      <div>
+        <div class="rotulo">Data</div>
+        <div class="valor" id="dataEvento">19 de Agosto</div>
+      </div>
+    </div>
+    <div class="item">
+      <div class="icone">⏰</div>
+      <div>
+        <div class="rotulo">Horário</div>
+        <div class="valor" id="horaEvento">19:30</div>
+      </div>
+    </div>
+    <div class="item">
+      <div class="icone">📍</div>
+      <div>
+        <div class="rotulo">Local</div>
+        <div class="valor" id="localEvento">Minha casa</div>
+        <div class="comp" id="complementoEvento" style="display:none;"></div>
+      </div>
+    </div>
+  </div>
+
+  <section class="rsvp" id="secaoRsvp">
+    <div class="grelha"><span></span><b>Confirmar presença</b><span></span></div>
+
+    <div class="campo">
+      <label for="inputNome">Seu nome</label>
+      <input type="text" id="inputNome" placeholder="Como você quer aparecer no convite">
+    </div>
+
+    <div class="campo">
+      <label>Você vai?</label>
+      <div class="toggle-presenca">
+        <button type="button" id="btnSim">Vou! 🔥</button>
+        <button type="button" id="btnNao">Não vou conseguir</button>
+      </div>
+    </div>
+
+    <div class="campo campo-acompanhantes" id="boxAcompanhantes">
+      <label for="inputAcompanhantes">Quantos acompanhantes vêm com você?</label>
+      <input type="number" id="inputAcompanhantes" min="0" step="1" value="0">
+    </div>
+
+    <div class="campo">
+      <label for="inputMsg">Deixe um recado (opcional)</label>
+      <textarea id="inputMsg" placeholder="Escreva algo para o(a) aniversariante..."></textarea>
+    </div>
+
+    <button class="btn-enviar" id="btnEnviar" disabled>Confirmar</button>
+    <p class="erro" id="erroForm">Preenche seu nome e diz se vai aparecer, bora 🙂</p>
+  </section>
+
+  <div class="confirmacao" id="telaConfirmacao">
+    <div class="selo" id="seloConfirmacao">🔥</div>
+    <h2 id="tituloConfirmacao">Aguardando você!</h2>
+    <p id="textoConfirmacao">Sua presença foi confirmada. Prepara a fome que o carvão já vai estar aceso.</p>
+  </div>
+</div>
+
+<!-- PAINEL ADMIN (sem link visível — veja instrução de acesso oculto no comentário acima do gatilho) -->
+<div class="admin-overlay" id="adminOverlay">
+  <div class="admin-box">
+    <button class="admin-fechar" id="fecharAdmin" aria-label="Fechar">✕</button>
+
+    <div id="pinTela">
+      <h2>Painel do organizador</h2>
+      <div class="pin-box">
+        <input type="password" id="inputPin" placeholder="PIN" inputmode="numeric" maxlength="6">
+        <button id="btnEntrarAdmin">Entrar</button>
+      </div>
+      <p class="erro" id="erroPin" style="display:none;">PIN incorreto.</p>
+    </div>
+
+    <div id="painelTela" style="display:none;">
+      <h2>Confirmações</h2>
+      <button class="refresh" id="btnAtualizar">Atualizar lista</button>
+      <div class="stats">
+        <div class="stat"><div class="num" id="statSim">0</div><div class="lbl">Confirmados</div></div>
+        <div class="stat"><div class="num" id="statNao">0</div><div class="lbl">Não vão</div></div>
+        <div class="stat"><div class="num" id="statTotal">0</div><div class="lbl">Total pessoas</div></div>
+      </div>
+      <div class="lista-rsvp" id="listaRsvp"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+const CONFIG = {
+  nomeAniversariante: "Lucas",
+  data: "19 de Agosto",
+  hora: "19:30",
+  local: "Minha casa",
+  complemento: "",
+  dataHoraEvento: "2026-08-19T19:30:00",
+  pinAdmin: "1808"
+};
+
+document.getElementById('tituloNome').textContent = CONFIG.nomeAniversariante;
+document.getElementById('dataEvento').textContent = CONFIG.data;
+document.getElementById('horaEvento').textContent = CONFIG.hora;
+document.getElementById('localEvento').textContent = CONFIG.local;
+if(CONFIG.complemento){
+  const comp = document.getElementById('complementoEvento');
+  comp.textContent = CONFIG.complemento;
+  comp.style.display = 'block';
+}
+
+(function criarBrasas(){
+  const container = document.getElementById('brasas');
+  const qtd = 14;
+  for(let i=0;i<qtd;i++){
+    const b = document.createElement('div');
+    b.className = 'brasa';
+    const size = 3 + Math.random()*5;
+    b.style.width = size+'px';
+    b.style.height = size+'px';
+    b.style.left = Math.random()*100+'%';
+    b.style.setProperty('--drift', (Math.random()*60-30)+'px');
+    b.style.animationDuration = (7+Math.random()*8)+'s';
+    b.style.animationDelay = (Math.random()*10)+'s';
+    container.appendChild(b);
+  }
+})();
+
+
+(function iniciarCountdown(){
+  const alvo = new Date(CONFIG.dataHoraEvento).getTime();
+  const elDias = document.getElementById('cdDias');
+  const elHoras = document.getElementById('cdHoras');
+  const elMin = document.getElementById('cdMin');
+  const elSeg = document.getElementById('cdSeg');
+  const blocos = document.getElementById('countdownBlocos');
+  const legenda = document.getElementById('countdownLegenda');
+  const fim = document.getElementById('countdownFim');
+
+  if(isNaN(alvo)) return;
+
+  function atualizar(){
+    const agora = Date.now();
+    const diff = alvo - agora;
+
+    if(diff <= 0){
+      blocos.style.display = 'none';
+      legenda.style.display = 'none';
+      fim.style.display = 'block';
+      clearInterval(intervalo);
+      return;
+    }
+
+    const dias = Math.floor(diff / (1000*60*60*24));
+    const horas = Math.floor((diff / (1000*60*60)) % 24);
+    const min = Math.floor((diff / (1000*60)) % 60);
+    const seg = Math.floor((diff / 1000) % 60);
+
+    elDias.textContent = String(dias);
+    elHoras.textContent = String(horas).padStart(2,'0');
+    elMin.textContent = String(min).padStart(2,'0');
+    elSeg.textContent = String(seg).padStart(2,'0');
+  }
+
+  atualizar();
+  const intervalo = setInterval(atualizar, 1000);
+})();
+
+let presenca = null; // true / false
+const btnSim = document.getElementById('btnSim');
+const btnNao = document.getElementById('btnNao');
+const boxAcompanhantes = document.getElementById('boxAcompanhantes');
+const btnEnviar = document.getElementById('btnEnviar');
+const inputNome = document.getElementById('inputNome');
+const erroForm = document.getElementById('erroForm');
+
+function validar(){
+  const nomeOk = inputNome.value.trim().length > 0;
+  btnEnviar.disabled = !(nomeOk && presenca !== null);
+}
+
+btnSim.addEventListener('click', ()=>{
+  presenca = true;
+  btnSim.classList.add('ativo-sim');
+  btnNao.classList.remove('ativo-nao');
+  boxAcompanhantes.classList.add('aberto');
+  validar();
+});
+btnNao.addEventListener('click', ()=>{
+  presenca = false;
+  btnNao.classList.add('ativo-nao');
+  btnSim.classList.remove('ativo-sim');
+  boxAcompanhantes.classList.remove('aberto');
+  validar();
+});
+inputNome.addEventListener('input', validar);
+
+btnEnviar.addEventListener('click', async ()=>{
+  const nome = inputNome.value.trim();
+  if(!nome || presenca === null){
+    erroForm.style.display = 'block';
+    return;
+  }
+  erroForm.style.display = 'none';
+  btnEnviar.disabled = true;
+  btnEnviar.textContent = 'Enviando...';
+
+  const registro = {
+    id: 'rsvp_' + Date.now() + '_' + Math.random().toString(36).slice(2,8),
+    nome,
+    confirmado: presenca,
+    acompanhantes: presenca ? (parseInt(document.getElementById('inputAcompanhantes').value) || 0) : 0,
+    mensagem: document.getElementById('inputMsg').value.trim(),
+    timestamp: new Date().toISOString()
+  };
+
+  try{
+    let atual = [];
+    try{
+      const r = await window.storage.get('rsvps', true);
+      if(r && r.value) atual = JSON.parse(r.value);
+    }catch(e){ atual = []; }
+    atual.push(registro);
+    await window.storage.set('rsvps', JSON.stringify(atual), true);
+  }catch(e){
+    console.error('Erro ao salvar RSVP', e);
+  }
+
+  document.getElementById('secaoRsvp').style.display = 'none';
+  const tela = document.getElementById('telaConfirmacao');
+  if(presenca){
+    document.getElementById('seloConfirmacao').textContent = '🔥';
+    document.getElementById('tituloConfirmacao').textContent = 'Aguardando você!';
+    document.getElementById('textoConfirmacao').textContent = 'Sua presença foi confirmada, ' + nome + '. Prepara a fome que o carvão já vai estar aceso.';
+  } else {
+    document.getElementById('seloConfirmacao').textContent = '💨';
+    document.getElementById('tituloConfirmacao').textContent = 'Que pena!';
+    document.getElementById('textoConfirmacao').textContent = 'Obrigado por avisar, ' + nome + '. Vamos sentir sua falta, mas fica pra próxima!';
+  }
+  tela.style.display = 'block';
+});
+
+/* ===================== ACESSO OCULTO AO PAINEL ADMIN =====================
+   Não existe link visível para o painel. Para abrir:
+   toque/clique 5 vezes seguidas (em menos de 6s) sobre o texto pequeno
+   "Você está convidado(a)" no topo do convite. Só quem sabe disso encontra.
+   =========================================================================== */
+const adminOverlay = document.getElementById('adminOverlay');
+const gatilhoAdmin = document.getElementById('gatilhoAdmin');
+let toques = 0;
+let primeiroToque = 0;
+
+function abrirPainelAdmin(){
+  adminOverlay.style.display = 'block';
+  document.getElementById('pinTela').style.display = 'block';
+  document.getElementById('painelTela').style.display = 'none';
+  document.getElementById('inputPin').value = '';
+  document.getElementById('erroPin').style.display = 'none';
+}
+
+gatilhoAdmin.addEventListener('click', ()=>{
+  const agora = Date.now();
+  if(agora - primeiroToque > 6000){
+    toques = 0;
+    primeiroToque = agora;
+  }
+  toques++;
+  if(toques >= 5){
+    toques = 0;
+    abrirPainelAdmin();
+  }
+});
+
+document.getElementById('fecharAdmin').addEventListener('click', ()=>{
+  adminOverlay.style.display = 'none';
+});
+document.getElementById('btnEntrarAdmin').addEventListener('click', verificarPin);
+document.getElementById('inputPin').addEventListener('keydown', (e)=>{ if(e.key === 'Enter') verificarPin(); });
+
+function verificarPin(){
+  const valor = document.getElementById('inputPin').value.trim();
+  if(valor === CONFIG.pinAdmin){
+    document.getElementById('pinTela').style.display = 'none';
+    document.getElementById('painelTela').style.display = 'block';
+    carregarRsvps();
+  } else {
+    document.getElementById('erroPin').style.display = 'block';
+  }
+}
+
+document.getElementById('btnAtualizar').addEventListener('click', carregarRsvps);
+
+async function carregarRsvps(){
+  const lista = document.getElementById('listaRsvp');
+  lista.innerHTML = '<p class="vazio">Carregando...</p>';
+  let dados = [];
+  try{
+    const r = await window.storage.get('rsvps', true);
+    if(r && r.value) dados = JSON.parse(r.value);
+  }catch(e){ dados = []; }
+
+  dados.sort((a,b)=> new Date(b.timestamp) - new Date(a.timestamp));
+
+  const sim = dados.filter(d=>d.confirmado);
+  const nao = dados.filter(d=>!d.confirmado);
+  const totalPessoas = sim.reduce((acc,d)=> acc + 1 + (d.acompanhantes||0), 0);
+
+  document.getElementById('statSim').textContent = sim.length;
+  document.getElementById('statNao').textContent = nao.length;
+  document.getElementById('statTotal').textContent = totalPessoas;
+
+  if(dados.length === 0){
+    lista.innerHTML = '<p class="vazio">Nenhuma confirmação ainda.</p>';
+    return;
+  }
+
+  lista.innerHTML = dados.map(d=>{
+    const data = new Date(d.timestamp);
+    const dataFmt = data.toLocaleDateString('pt-BR') + ' ' + data.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+    return `
+      <div class="rsvp-card">
+        <div class="linha1">
+          <span class="nome">${escapeHtml(d.nome)}</span>
+          <span class="badge ${d.confirmado ? 'sim' : 'nao'}">${d.confirmado ? 'Confirmado' : 'Não vai'}</span>
+        </div>
+        <div class="meta">${dataFmt}${d.confirmado && d.acompanhantes ? ' · +' + d.acompanhantes + ' acompanhante(s)' : ''}</div>
+        ${d.mensagem ? `<div class="msg">"${escapeHtml(d.mensagem)}"</div>` : ''}
+      </div>`;
+  }).join('');
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+</script>
+
+</body>
+</html>
